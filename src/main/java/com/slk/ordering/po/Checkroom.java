@@ -102,17 +102,18 @@ public class Checkroom {
         patients.add(patient);
         // 将该患者的检查项的
         preTime += checkitemSet.stream().mapToInt(Checkitem::getCostTime).sum();
+
+
     }
 
     /**
      * 患者离开检查室
      * @param patient
-     * @param checkitemSet
      */
-    public void outCheckMap(Patient patient, Set<Checkitem> checkitemSet) {
-        checkitemMap.remove(patient);
+    public void outCheckMap(Patient patient) {
         patients.remove(patient);
-        preTime -= checkitemSet.stream().mapToInt(Checkitem::getCostTime).sum();
+        preTime -= checkitemMap.get(patient).stream().mapToInt(Checkitem::getCostTime).sum();
+        checkitemMap.remove(patient);
     }
 
 }

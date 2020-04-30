@@ -35,9 +35,6 @@ public class Worksite implements Runnable {
     /* 现场内的患者 */
     private List<Patient> curPatients;
 
-    /* 等待池患者 */
-    private List<Patient> waitPatients;
-
     /* 现场内所有检查室的检查项 */
     private List<Checkitem> checkitems;
 
@@ -134,12 +131,18 @@ public class Worksite implements Runnable {
             curPatients.add(patient);
             // 压床值加一
             stockLimit++;
-            // 将患者从等待池移除
-            waitPatients.remove(patient);
             log.info("【{}】患者成功进入【{}】现场",patient.getName(),name);
         }
         return true;
 
+    }
+
+    /**
+     * 分配失败患者离开现场
+     */
+    public void outWorksite(Patient patient) {
+        curPatients.remove(patient);
+        stockLimit--;
     }
 
 

@@ -112,8 +112,35 @@ public class Hospital {
         // 如果所有现场的检查室都没有检查完患者的检查项，
         // 则将患者已分配的现场和检查室以及患者自身的检查室安排清零
         if (patient.getChecktodoitems().size() > 0) {
+            Set<Checkroom> collect = patient.resetCheck();
+            int size = collect.size();
+            // 如果已分配现场
+            if (size > 0) {
+                // 患者离开现场
+                for (Worksite ws : worksites) {
+                    List<Checkroom> crList = ws.getCheckrooms();
+                    if(!Sets.intersection(Sets.newHashSet(crList), collect).isEmpty()) {
+                        ws.outWorksite(patient);
+                        size--;
+                        if (size == 0) {
+                            break;
+                        }
+                    }
+                }
+                // 患者离开检查室
+                for (Checkroom cr : collect) {
+                    cr.outCheckMap(patient);
+                }
 
+            }
+
+            return false;
         }
+
+        // 将患者从等待池移除
+        waitPatients.remove(patient);
+
+        return true;
 
 
     }
@@ -184,7 +211,6 @@ public class Hospital {
                 boolean b = e.getState() == 1;
                 if (b) {
                     // 给开启的现场连接等待池
-                    e.setWaitPatients(waitPatients);
                     Thread thread = worksiteThMap.get(e.getName());
                     if (null == thread) {
                         thread = new Thread(e);

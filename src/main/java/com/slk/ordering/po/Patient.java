@@ -4,10 +4,7 @@ import com.google.common.collect.Lists;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -45,6 +42,17 @@ public class Patient {
         // 将要检查项从待检查list中移除
         checktodoitems.removeAll(checkitemSet);
 
+    }
+
+    /**
+     * 将患者还原至未分配状态
+     * 并返回分配的检查室
+     */
+    public Set<Checkroom> resetCheck() {
+        Set<Checkroom> collect = this.getCheckitemMap().keySet();
+        this.checktodoitems = getCheckitems();
+        checkitemMap.clear();
+        return collect;
     }
 
 
