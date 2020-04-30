@@ -67,8 +67,6 @@ public class Hospital {
             wp.init();
             // 匹配所有现场开启的检查项
             if (checkitems.containsAll(wp.getCheckitems())) {
-                // 选择先要去的现场
-//                List<Worksite> wss = findWorksite(wp);
                 // 分配患者进入现场
                 boolean f = takeoverFromWard(wp);
                 // 如果进入现场成功，则将患者从等待池移除
@@ -173,59 +171,6 @@ public class Hospital {
 
         return true;
 
-
-    }
-
-    /**
-     *  给患者选择合适的现场
-     * @param wp
-     * @return
-     */
-    private List<Worksite> findWorksite(Patient wp) {
-
-        List<Worksite> wss = new ArrayList<>();
-
-        // 找出有必要检查项的现场
-        for (Worksite worksite : worksitesOpened) {
-            // 如果现场已达压床值，则跳过
-            if (worksite.overStock()) {
-                continue;
-            }
-
-            // 现场检查项
-            Set<Checkitem> wcitems = Sets.newHashSet(worksite.getCheckitems());
-
-            // 患者检查项
-            Set<Checkitem> pitems = Sets.newHashSet(wp.getCheckitems());
-
-            Sets.SetView<Checkitem> intersection = Sets.intersection(wcitems, pitems);
-            // 交集为空,患者不在这个现场做
-            if (intersection.isEmpty()) {
-                continue;
-            }
-            // 交集检查项
-            HashSet<Checkitem> xjitems = intersection.copyInto(Sets.newHashSet());
-
-            // 交集与患者检查项相等，则患者完全在这个现场做
-            if (xjitems.equals(pitems)) {
-                // 将检查项完全赋值给待办
-//                wp.setChecktodoitems(wp.getCheckitems());
-                return Collections.singletonList(worksite);
-            }
-
-
-            wss.add(worksite);
-        }
-
-        wss = wss.stream().sorted((a,b)->{
-
-
-            return 1;
-        }).collect(Collectors.toList());
-
-        // 根据等待时间排序
-
-        return wss;
 
     }
 
