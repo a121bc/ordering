@@ -95,6 +95,7 @@ public class Checkroom {
         Set<Checkitem> effectitems = intersection.copyInto(Sets.newHashSet());
         // 给患者添加检查室分配队列，同时给检查室添加患者排队队列
         patient.signCheckMap(name,effectitems);
+
         this.signCheckMap(patient.getName(), effectitems);
         return true;
     }
@@ -105,7 +106,7 @@ public class Checkroom {
      * @param checkitemSet
      */
     public void signCheckMap(String patient, Set<Checkitem> checkitemSet) {
-        checkitemMap.put(patient,checkitems);
+        checkitemMap.put(patient,new ArrayList<>(checkitemSet));
         // 将患者更新到该检查室患者区
         patients.add(patient);
         // 将该患者的检查项的

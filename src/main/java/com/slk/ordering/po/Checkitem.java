@@ -11,7 +11,7 @@ import lombok.Data;
  */
 @Data
 @Builder
-public class Checkitem {
+public class Checkitem implements Comparable<Checkitem> {
 
     private String name;
 
@@ -20,4 +20,9 @@ public class Checkitem {
 
     /* 检查时间 */
     private Integer costTime;
+
+    @Override
+    public int compareTo(Checkitem o) {
+        return o.power.compareTo(this.power);
+    }
 }

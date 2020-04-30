@@ -7,6 +7,7 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -18,7 +19,7 @@ import java.util.stream.Collectors;
 @Data
 @Builder
 @Slf4j
-public class Worksite implements Runnable {
+public class Worksite implements Comparable<Worksite> {
 
     /* 现场名称 */
     private String name;
@@ -38,14 +39,6 @@ public class Worksite implements Runnable {
     /* 现场内所有检查室的检查项 */
     private List<Checkitem> checkitems;
 
-
-    @Override
-    public void run() {
-        if (1 == state) {
-
-        }
-
-    }
 
     /**
      * @Description 开启现场
@@ -139,5 +132,8 @@ public class Worksite implements Runnable {
         curPatients.remove(patient);
     }
 
-
+    @Override
+    public int compareTo(Worksite o) {
+        return 0;
+    }
 }

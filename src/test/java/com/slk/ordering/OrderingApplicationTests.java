@@ -1,8 +1,8 @@
 package com.slk.ordering;
 
 import com.slk.ordering.po.*;
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 //@SpringBootTest
+@Slf4j
 class OrderingApplicationTests {
 
     @Test
@@ -24,12 +25,12 @@ class OrderingApplicationTests {
         Checkitem c_f = Checkitem.builder().name("F").power(5).costTime(15).build();
 
         /* 检查室 */
-        Checkroom checkroom_de = Checkroom.builder().name("检查室DE").checkitems(Arrays.asList(c_d,c_e)).overtime(30).build();
-        Checkroom checkroom_d = Checkroom.builder().name("检查室D").checkitems(Collections.singletonList(c_d)).overtime(30).build();
-        Checkroom checkroom_abc = Checkroom.builder().name("检查室ABC").checkitems(Arrays.asList(c_a,c_b,c_c)).overtime(30).build();
-        Checkroom checkroom_bc = Checkroom.builder().name("检查室BC").checkitems(Arrays.asList(c_b,c_c)).overtime(30).build();
-        Checkroom checkroom_f = Checkroom.builder().name("检查室F").checkitems(Collections.singletonList(c_f)).overtime(30).build();
-        Checkroom checkroom_a = Checkroom.builder().name("检查室A").checkitems(Collections.singletonList(c_a)).overtime(30).build();
+        Checkroom checkroom_de = Checkroom.builder().name("检查室DE").checkitems(Arrays.asList(c_d,c_e)).overtime(50).build();
+        Checkroom checkroom_d = Checkroom.builder().name("检查室D").checkitems(Collections.singletonList(c_d)).overtime(50).build();
+        Checkroom checkroom_abc = Checkroom.builder().name("检查室ABC").checkitems(Arrays.asList(c_a,c_b,c_c)).overtime(50).build();
+        Checkroom checkroom_bc = Checkroom.builder().name("检查室BC").checkitems(Arrays.asList(c_b,c_c)).overtime(50).build();
+        Checkroom checkroom_f = Checkroom.builder().name("检查室F").checkitems(Collections.singletonList(c_f)).overtime(50).build();
+        Checkroom checkroom_a = Checkroom.builder().name("检查室A").checkitems(Collections.singletonList(c_a)).overtime(50).build();
 
         /* 现场 */
         Worksite worksite1 = Worksite.builder().name("现场1").state(1).checkrooms(Arrays.asList(checkroom_de, checkroom_d)).stockLimit(12).build();
@@ -72,12 +73,15 @@ class OrderingApplicationTests {
                 d_1,d_2
         );
 
+        long start = System.currentTimeMillis();
+
         Hospital.builder()
                 .worksites(Arrays.asList(worksite1,worksite2))
                 .waitPatients(new ArrayList<>(patients))
                 .build()
                 .openHospital();
-
+        long end = System.currentTimeMillis();
+        log.info("排序耗时：{}毫秒",end-start);
 
 
     }

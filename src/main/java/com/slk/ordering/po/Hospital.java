@@ -95,23 +95,22 @@ public class Hospital {
         log.info("现场情况");
         for (Worksite ws : worksites) {
             log.info("现场名：{}",ws.getName());
-            log.info("  压床值：{}",ws.getStockLimit());
-            log.info("  现场内患者数量：{}",ws.getCurPatients().size());
-            log.info("  检查项：{}",ws.getCheckitems().stream().map(Checkitem::getName).collect(Collectors.toSet()));
+            log.info("  压床值：{},现场内患者数量：{},检查项：{}",
+                    ws.getStockLimit(),
+                    ws.getCurPatients().size(),
+                    ws.getCheckitems().stream().map(Checkitem::getName).collect(Collectors.toSet())
+            );
             log.info("*************************************************");
             List<Checkroom> crooms = ws.getCheckrooms();
             for (Checkroom croom : crooms) {
                 log.info("  检查室名：{}", croom.getName());
-                log.info("  超时时间：{}", croom.getOvertime());
-                log.info("  预计排队时间：{}", croom.getPreTime());
+                log.info("  超时时间：{},预计排队时间：{},检查项：{}", croom.getOvertime(),croom.getPreTime(),croom.getCheckitems().stream().map(Checkitem::getName).collect(Collectors.toSet()));
 
-                log.info("  检查项：{}", croom.getCheckitems().stream().map(Checkitem::getName).collect(Collectors.toSet()));
                 log.info("  检查室内的患者:");
                 Map<String, List<Checkitem>> checkitemMap = croom.getCheckitemMap();
                 Set<Map.Entry<String, List<Checkitem>>> entries = checkitemMap.entrySet();
                 for (Map.Entry<String, List<Checkitem>> entry : entries) {
-                    log.info("      患者:{}",entry.getKey());
-                    log.info("      检查项:{}",entry.getValue().stream().map(Checkitem::getName).collect(Collectors.toSet()));
+                    log.info("      患者:{},检查项:{}",entry.getKey(),entry.getValue().stream().map(Checkitem::getName).collect(Collectors.toSet()));
                 }
                 log.info("*************************************************");
             }
