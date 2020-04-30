@@ -64,31 +64,60 @@ public class Hospital {
         Iterator<Patient> wPatient = waitPatients.iterator();
         while (wPatient.hasNext()) {
             Patient wp = wPatient.next();
+            wp.init();
             // 匹配所有现场开启的检查项
             if (checkitems.containsAll(wp.getCheckitems())) {
                 // 选择先要去的现场
 //                List<Worksite> wss = findWorksite(wp);
-
-
-                // 尝试出病区
+                // 分配患者进入现场
                 boolean f = takeoverFromWard(wp);
+                // 如果进入现场成功，则将患者从等待池移除
+                if (f) {
+                    quenePatients.add(wp);
+                    wPatient.remove();
+                }
 
-                // 尝试进入现场
-
-
-                quenePatients.add(wp);
-                wPatient.remove();
             }
         }
 
 
         // 开启map中的线程
-        Collection<Thread> threads = worksiteThMap.values();
+        /*Collection<Thread> threads = worksiteThMap.values();
         for (Thread th : threads) {
             th.start();
+        }*/
+
+        logInfo();
+
+    }
+
+    private void logInfo() {
+        log.info("现场情况");
+        for (Worksite ws : worksites) {
+            log.info("现场名：{}",ws.getName());
+            log.info("  压床值：{}",ws.getStockLimit());
+            log.info("  现场内患者数量：{}",ws.getCurPatients().size());
+            log.info("  检查项：{}",ws.getCheckitems().stream().map(Checkitem::getName).collect(Collectors.toSet()));
+            log.info("*************************************************");
+            List<Checkroom> crooms = ws.getCheckrooms();
+            for (Checkroom croom : crooms) {
+                log.info("  检查室名：{}", croom.getName());
+                log.info("  超时时间：{}", croom.getOvertime());
+                log.info("  预计排队时间：{}", croom.getPreTime());
+
+                log.info("  检查项：{}", croom.getCheckitems().stream().map(Checkitem::getName).collect(Collectors.toSet()));
+                log.info("  检查室内的患者:");
+                Map<String, List<Checkitem>> checkitemMap = croom.getCheckitemMap();
+                Set<Map.Entry<String, List<Checkitem>>> entries = checkitemMap.entrySet();
+                for (Map.Entry<String, List<Checkitem>> entry : entries) {
+                    log.info("      患者:{}",entry.getKey());
+                    log.info("      检查项:{}",entry.getValue().stream().map(Checkitem::getName).collect(Collectors.toSet()));
+                }
+                log.info("*************************************************");
+            }
+
         }
-
-
+        log.info("等待池:{}",waitPatients.stream().map(Patient::getName).collect(Collectors.toList()));
 
     }
 
@@ -112,7 +141,13 @@ public class Hospital {
         // 如果所有现场的检查室都没有检查完患者的检查项，
         // 则将患者已分配的现场和检查室以及患者自身的检查室安排清零
         if (patient.getChecktodoitems().size() > 0) {
-            Set<Checkroom> collect = patient.resetCheck();
+            Set<String> croom = patient.resetCheck();
+            Set<Checkroom> collect = worksites.stream()
+                    .map(Worksite::getCheckrooms)
+                    .flatMap(Collection::stream)
+                    .filter(e ->croom.contains(e.getName()))
+                    .collect(Collectors.toSet());
+
             int size = collect.size();
             // 如果已分配现场
             if (size > 0) {
@@ -129,16 +164,13 @@ public class Hospital {
                 }
                 // 患者离开检查室
                 for (Checkroom cr : collect) {
-                    cr.outCheckMap(patient);
+                    cr.outCheckMap(patient.getName());
                 }
 
             }
 
             return false;
         }
-
-        // 将患者从等待池移除
-        waitPatients.remove(patient);
 
         return true;
 
@@ -209,16 +241,23 @@ public class Hospital {
         worksitesOpened = worksites.stream()
             .filter(e-> {
                 boolean b = e.getState() == 1;
-                if (b) {
+                /*if (b) {
                     // 给开启的现场连接等待池
                     Thread thread = worksiteThMap.get(e.getName());
                     if (null == thread) {
                         thread = new Thread(e);
                     }
                     worksiteThMap.put(e.getName(),thread);
-                }
+                }*/
                 return b;
             }).collect(Collectors.toList());
+
+        // 将现场开启
+        for (Worksite ws : worksitesOpened) {
+            ws.openWorkSite();
+        }
+
+        this.quenePatients = new ArrayList<>();
 
         // 将开启现场中的检查项去重后配置到当前字段
         checkitems = worksitesOpened.stream()

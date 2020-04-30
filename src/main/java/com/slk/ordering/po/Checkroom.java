@@ -34,14 +34,22 @@ public class Checkroom {
 
     /********************************************************/
     /* 检查室内的患者 */
-    private List<Patient> patients;
+    private List<String> patients;
 
     /* 患者，检查项安排 */
-    private Map<Patient, List<Checkitem>> checkitemMap;
+    private Map<String, List<Checkitem>> checkitemMap;
     /********************************************************/
 
     /* 检查室状态 0-空闲中 1-检查中 */
     private Integer state;
+
+    public void openCheckroom() {
+        this.preTime = 0;
+        this.actTime = 0;
+        this.patients = new ArrayList<>();
+        this.checkitemMap = new HashMap<>();
+
+    }
 
     /**
      * @Description 判断当前检查室是否超时
@@ -75,7 +83,7 @@ public class Checkroom {
 
         // 匹配检查项，决定是否接受
         HashSet<Checkitem> roomitems = Sets.newHashSet(this.checkitems);
-        HashSet<Checkitem> paitems = Sets.newHashSet(patient.getCheckitems());
+        HashSet<Checkitem> paitems = Sets.newHashSet(patient.getChecktodoitems());
 
         Sets.SetView<Checkitem> intersection = Sets.intersection(roomitems, paitems);
         // 没有匹配项，检查室不接收
@@ -86,8 +94,8 @@ public class Checkroom {
         // 匹配到的
         Set<Checkitem> effectitems = intersection.copyInto(Sets.newHashSet());
         // 给患者添加检查室分配队列，同时给检查室添加患者排队队列
-        patient.signCheckMap(this,effectitems);
-        this.signCheckMap(patient, effectitems);
+        patient.signCheckMap(name,effectitems);
+        this.signCheckMap(patient.getName(), effectitems);
         return true;
     }
 
@@ -96,7 +104,7 @@ public class Checkroom {
      * @param patient
      * @param checkitemSet
      */
-    public void signCheckMap(Patient patient, Set<Checkitem> checkitemSet) {
+    public void signCheckMap(String patient, Set<Checkitem> checkitemSet) {
         checkitemMap.put(patient,checkitems);
         // 将患者更新到该检查室患者区
         patients.add(patient);
@@ -110,7 +118,7 @@ public class Checkroom {
      * 患者离开检查室
      * @param patient
      */
-    public void outCheckMap(Patient patient) {
+    public void outCheckMap(String patient) {
         patients.remove(patient);
         preTime -= checkitemMap.get(patient).stream().mapToInt(Checkitem::getCostTime).sum();
         checkitemMap.remove(patient);

@@ -65,23 +65,21 @@ public class Worksite implements Runnable {
             return;
         }
 
-        // 2. 根据其 （超时时间）和 （压床值）判断是否要人
-        if (overStock()) {
-            log.warn("排队患者已达压床值，{}现场停止要人",name);
-            return;
-        }
-
-        if (checkrooms.stream().noneMatch(Checkroom::overstate) ) {
-            log.warn("现场内的所有检查室均已达超时时间，{}现场停止要人",name);
-            return;
-        }
+        // 初始化现场人数
+        curPatients = new ArrayList<>();
 
         log.info("开始获取病区内的检查项");
         checkitems = checkrooms.stream()
                 .map(Checkroom::getCheckitems)
                 .flatMap(Collection::stream)
                 .collect(Collectors.toList());
-        log.info("现场开启的检查项：{}",checkitems);
+        log.info("[{}]现场开启的检查项：{}",name,checkitems);
+
+        // 初始化检查室
+        for (Checkroom cr : checkrooms) {
+            cr.openCheckroom();
+        }
+
 
     }
 
@@ -99,9 +97,6 @@ public class Worksite implements Runnable {
      * @return
      */
     public boolean takeover(Patient patient) {
-        if (curPatients == null) {
-            curPatients = new ArrayList<>();
-        }
 
         // 现场排队患者超出压床值，则不再接收患者
         if (overStock()) {
@@ -124,14 +119,14 @@ public class Worksite implements Runnable {
             return false;
         }
 
+        // 当前现场 添加患者排队
+        curPatients.add(patient);
+
 
         // 如果患者分配完成，则正式进入该现场
         if (patient.getChecktodoitems().size()==0) {
-            // 当前现场 添加患者排队
-            curPatients.add(patient);
             // 压床值加一
-            stockLimit++;
-            log.info("【{}】患者成功进入【{}】现场",patient.getName(),name);
+            log.info("【{}】患者成功进入{}检查室",patient.getName(),patient.getCheckitemMap().keySet());
         }
         return true;
 
@@ -142,7 +137,6 @@ public class Worksite implements Runnable {
      */
     public void outWorksite(Patient patient) {
         curPatients.remove(patient);
-        stockLimit--;
     }
 
 
