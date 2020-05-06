@@ -47,7 +47,7 @@ public class Checkroom implements Comparable<Checkroom> {
         this.preTime = 0;
         this.actTime = 0;
         this.patients = new ArrayList<>();
-        this.checkitemMap = new HashMap<>();
+        this.checkitemMap = new LinkedHashMap<>();
 
     }
 
