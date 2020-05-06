@@ -23,6 +23,6 @@ public class Checkitem implements Comparable<Checkitem> {
 
     @Override
     public int compareTo(Checkitem o) {
-        return o.power.compareTo(this.power);
+        return this.power.compareTo(o.power);
     }
 }

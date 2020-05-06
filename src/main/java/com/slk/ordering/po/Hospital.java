@@ -125,7 +125,8 @@ public class Hospital {
      */
     private boolean takeoverFromWard(Patient patient) {
 
-        List<Worksite> wss = new ArrayList<>();
+        // 排序现场
+        Collections.sort(worksites);
         // 找出有必要检查项的现场
         for (Worksite worksite : worksites) {
             // 患者进入现场

@@ -17,12 +17,12 @@ class OrderingApplicationTests {
     void contextLoads() {
 
         /* 检查项 */
-        Checkitem c_a = Checkitem.builder().name("A").power(10).costTime(6).build();
-        Checkitem c_b = Checkitem.builder().name("B").power(9).costTime(6).build();
-        Checkitem c_c = Checkitem.builder().name("C").power(8).costTime(6).build();
-        Checkitem c_d = Checkitem.builder().name("D").power(7).costTime(3).build();
-        Checkitem c_e = Checkitem.builder().name("E").power(6).costTime(3).build();
-        Checkitem c_f = Checkitem.builder().name("F").power(5).costTime(15).build();
+        Checkitem c_a = Checkitem.builder().name("A").power(1).costTime(6).build();
+        Checkitem c_b = Checkitem.builder().name("B").power(2).costTime(6).build();
+        Checkitem c_c = Checkitem.builder().name("C").power(3).costTime(6).build();
+        Checkitem c_d = Checkitem.builder().name("D").power(4).costTime(3).build();
+        Checkitem c_e = Checkitem.builder().name("E").power(5).costTime(3).build();
+        Checkitem c_f = Checkitem.builder().name("F").power(6).costTime(15).build();
 
         /* 检查室 */
         Checkroom checkroom_de = Checkroom.builder().name("检查室DE").checkitems(Arrays.asList(c_d,c_e)).overtime(50).build();

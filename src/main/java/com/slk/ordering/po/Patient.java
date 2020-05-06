@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * @describe： 患者
@@ -35,7 +34,7 @@ public class Patient {
     private List<Checkitem> checkeditems;
 
     public void init() {
-        this.checkitemMap = new HashMap<>();
+        this.checkitemMap = new LinkedHashMap<>();
         this.checktodoitems = new ArrayList<>(this.checkitems);
         this.checkeditems = new ArrayList<>();
     }

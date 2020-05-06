@@ -16,7 +16,7 @@ import java.util.*;
 @Data
 @Builder
 @Slf4j
-public class Checkroom {
+public class Checkroom implements Comparable<Checkroom> {
 
     private String name;
 
@@ -125,4 +125,31 @@ public class Checkroom {
         checkitemMap.remove(patient);
     }
 
+    @Override
+    public int compareTo(Checkroom o) {
+        // 根据检查项比较优先级
+        List<Checkitem> ci1 = this.getCheckitems();
+        List<Checkitem> ci2 = o.getCheckitems();
+        Collections.sort(ci1);
+        Collections.sort(ci2);
+        int min = Math.min(ci1.size(), ci2.size());
+        for (int i = 0; i < min; i++) {
+            Checkitem i1 = ci1.get(i);
+            Checkitem i2 = ci2.get(i);
+            // 权重相等则比较下一个检查项
+            if (i1.getPower().equals(i2.getPower())) {
+                continue;
+            }
+            // 不等则，取权重高的
+            return i1.compareTo(i2);
+        }
+        //相等长度下，比较相等则长度大的权重大
+        if (ci1.size() != ci2.size()) {
+            return ci2.size() - ci1.size();
+        }
+
+        // 如果检查项权重相同，再根据预计排队时间比较优先级
+        return o.preTime.compareTo(this.preTime);
+
+    }
 }

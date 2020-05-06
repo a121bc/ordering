@@ -6,8 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -98,6 +98,8 @@ public class Worksite implements Comparable<Worksite> {
 
         int oldSize = patient.getCheckitems().size();
 
+        // 排序检查室
+        Collections.sort(checkrooms);
         // 尝试进入检查室
         for (Checkroom checkroom : checkrooms) {
             boolean tover = checkroom.takeover(patient);
@@ -134,6 +136,21 @@ public class Worksite implements Comparable<Worksite> {
 
     @Override
     public int compareTo(Worksite o) {
-        return 0;
+        List<Checkroom> cr1 = this.getCheckrooms();
+        List<Checkroom> cr2 = o.getCheckrooms();
+        Collections.sort(cr1);
+        Collections.sort(cr2);
+        int min = Math.min(cr1.size(), cr2.size());
+        for (int i = 0; i < min; i++) {
+            Checkroom r1 = cr1.get(i);
+            Checkroom r2 = cr2.get(i);
+            int b1 = r1.compareTo(r2);
+            if (b1 != 0) {
+                return b1;
+            }
+        }
+
+
+        return cr2.size() - cr1.size();
     }
 }
